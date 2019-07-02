@@ -120,66 +120,65 @@
                              $(".table tbody").html(tr);
                    	}
                	})	    
-	       }         
-	                show()   
+	       }           show()
+
+
            function getToken(){
-          $.ajax({
-            url:"{:url('common/commonToken')}",
-            dataType:'json',
-            success:function(res){
-              $("#__token__").val(res.token)
-            }
-          })
+              $.ajax({
+                   url:"{:url('common/commonToken')}",
+                   dataType:'json',
+                   success:function(res){
+                   $("#__token__").val(res.token)
+               }
+           })
         } 
         // getToken() 
 
 
 
            function mydelete(id){
-            var __token__=$("#__token__").val()
-            var __token__=$("#__token__").val()
-             $.ajax({
-             	url:"{:url('permissioncate/delete')}",
-             	type:'post',
-             	data:{
-                     id:id,
-                      __token__:__token__
-             	},
-            	dataType:'json',
-              success:function(res){
-                	if (res.status=='ok') {
-                                 
-                                 show()
+                  var __token__=$("#__token__").val()
+                  var __token__=$("#__token__").val()
+                        $.ajax({
+                           	url:"{:url('permissioncate/delete')}",
+                          	type:'post',
+                                  	data:{
+                                             id:id,
+                                           __token__:__token__
+                           	           },
+                                    	dataType:'json',
+                                      success:function(res){
+                                     	if (res.status=='ok') {                                
+                                           show()
                                }getToken()
                         }
                  })
            }  
             
        function datadel(){
-       	var r=confirm("你确定删除吗");
-        var __token__=$("#__token__").val()
-       	if(r==true){
-       	var box=$(".mycheckbox:checked")
-       	var id='0'
+          	var r=confirm("你确定删除吗");
+            var __token__=$("#__token__").val()
+       	               if(r==true){
+                            	var box=$(".mycheckbox:checked")
+                            	var id='0'
 
-       	 for (var i = 0; i <box.length; i++) {
-       	 	//console.log(box[i].value)
-       	 	id=id+','+box[i].value
-       	 }
+                         	 for (var i = 0; i <box.length; i++) {
+       	 	                  //console.log(box[i].value)
+       	                   	id=id+','+box[i].value
+       	                   }
        	
-       	$.ajax({
-             	url:"{:url('permissioncate/deleteMore')}",
-             	type:'post',
-             	data:{
-                     id:id,
-                     __token__:__token__,
-             	},
-             	dataType:'json',
-                success:function(res){
-                	 if (res.status=='ok') {
-                                 
-                                 show()
-                                 getToken()
+                      	$.ajax({
+             	               url:"{:url('permissioncate/deleteMore')}",
+             	               type:'post',
+                               	data:{
+                                     id:id,
+                                     __token__:__token__,
+             	                   },
+             	                    dataType:'json',
+                                  success:function(res){
+                                	 if (res.status=='ok') {                              
+                                       show()
+                                       getToken()
                                }
                         }
                  })
