@@ -1,17 +1,23 @@
 {include file="header"}
 <section class="Hui-article-box">
-	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 权限管理 <span class="c-gray en">&gt;</span> 权限分类管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 		
 	<div class="Hui-article">
 		<article class="cl pd-20">
 			<div class="text-c">
-				
-					<input type="text" placeholder="权限名称" value="" class="input-text" style="width:120px" id="name">
-                 
+				    <input id='__token__' type="" name="__token__" value="{$Request.token}" hidden="" />
+					<input type="text" placeholder="名称" value="" class="input-text" style="width:120px" id="name">
+                    <input type="text" placeholder="描述" value="" class="input-text" style="width:120px" id="description">
+				    <input type="text" placeholder="路径" value="" class="input-text" style="width:120px" id="path">
+				    <select name="" id="category_id">
+				    	<option value="">分类</option>
+				    </select>
 				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button><span id="add_span"></span>
 				
 			</div>
-			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span>
+
+       <span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
 					<thead>
@@ -20,7 +26,9 @@
 							<th width="70">ID</th>
 						
 						    <th width="120">权限名称</th>
-						    <th width="120">分类名字</th>
+							<th width="120">权限描述</th>
+						    <th width="120">权限路径</th>
+							<th width="120">权限分类</th>
 							<th width="100">操作</th>
 						</tr>
 					</thead>
@@ -31,39 +39,241 @@
 			</div>
 		</article>
 	</div>
+	<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <input type="text" value="" id="up_id" hidden="">
+				 <input type="text" value="" id="up_name">
+				 <input type="text" value="" id="up_description">
+				 <input type="text" value="" id="up_path">
+				 <select name="" id="up_category_id">
+				    	<option>分类</option>
+				    </select>
+				 <span id="up_span"></span>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
 </section>
-
-<!--_footer 作为公共模版分离出去--> 
-<!-- <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
-<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="static/h-ui/js/H-ui.js"></script> 
-<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.page.js"></script>  -->
-<!--/_footer /作为公共模版分离出去--> 
 {include file="footer"}
 <!--请在下方写此页面业务相关的脚本--> 
 <script>
-      $(document).reday(function(){
-      	 $("#add").click(function(){
-      	 var name=$('#name').val()
-      	 var category_id=$('category_id').val()
-      	 $.ajax({
-      	 	url:"{:url('permission/addAction')}",
-      	 	type:'post',
-      	 	dara:{
-      	 		name:name,
-      	 		category_id:category_id
-      	 	},
-      	 	dataType:'json',
-      	 	success:function(res){
-      	 		console.log(res)
-      	 		if (res.status=='ok') {
-                     elert(123);
-      	 		}
-      	 	}
-      	 })
-      	})
-      });
+    function modaldemo(id,name,description,path,category_id){
+    	$("#up_id").val(id)
+    	$("#up_name").val(name)
+    	$("#up_description").val(description)
+    	$("#up_path").val(path)
+    	$("#up_category_id").val(category_id)
+    	//getCate('up_category_id')
+    	$("#modal-demo").modal("show")
+    }
 
+	function getToken(){
+              $.ajax({
+                   url:"{:url('common/commonToken')}",
+                   dataType:'json',
+                   success:function(res){
+                   $("#__token__").val(res.token)
+               }
+           })
+        }
+
+    function getCate(str) {
+    	 $.ajax({
+    	 	url:'{:url("permissioncate/show")}',
+    	 	dataType:'json',
+    	 	success:function(res){
+    	 		var option=''
+    	 		for (var i = 0; i < res.length; i++) {	 			
+    	 			  	 option=option+"<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>"; 			   
+    	 		}
+    	 		$('#category_id').html(option)
+    	 		$('#up_category_id').html(option)
+    	 	}
+    	 })
+    	} getCate()
+
+    function up_action(){
+    	var id=$("#up_id").val()
+    	var name=$("#up_name").val()
+    	var description=$("#up_description").val()
+    	var path=$("#up_path").val()
+    	var category_id=$("#up_category_id").val()
+        var __token__=$("#__token__").val()
+    	 $.ajax({
+    	 	url:'{:url("permission/updateaction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 	  	id:id,
+    	 		__token__:__token__,
+    	 		name:name,
+    	 		description:description,
+    	 		path:path,
+    	 		category_id:category_id,
+    	 	},
+    	 	success:function(res){
+    	 		console.log(res)
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	$("#modal-demo").modal("hide")
+                   	 show()
+                   }
+                    if (res.status=='error') {
+                   	$("#up_span").html(res.data)
+                   	 
+                   }
+    	 	    }
+    	 	})
+    }
+
+
+    function show() {
+    	 $.ajax({
+    	 	url:'{:url("permission/show")}',
+    	 	success:function(res){
+    	 		var data=res.data
+    	 		var tr=''
+    	 		for (var i = 0; i < data.length; i++) {
+    	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td>"+data[i]['path']+"</td><td>"+data[i]['p_c_name']+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+    	 		}
+    	 		$('.table tbody').html(tr)
+    	
+    	       }
+
+    	    })
+    	 }
+    	  show()
+    	 $(document).ready(function(){
+          $('#add').click(function(){
+              var __token__=$('#__token__').val()
+              var name=$('#name').val()
+              var description=$('#description').val()
+              var path=$('#path').val()
+              var category_id=$('#category_id').val()
+     
+    	    $.ajax({
+    	 	url:'{:url("permission/addAction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 		__token__:__token__,
+    	 		name:name,
+    	 		description:description,
+    	 		path:path,
+    	 		category_id:category_id,
+    	 	},
+    	 	success:function(res){
+    	 		   getToken()
+                   console.log(res)
+                   if (res.status=='ok') {
+                   	 $("#add_span").html(res.data);
+                                 $("#add_span").css("color",'green');
+                                 $("#name").val('');
+                                 $("#description").val('');
+                                 $("#path").val('');
+                                 $("#category_id").val('');
+                                 setTimeout(function(){
+                                 $("#add_span").html('');
+                                   },3000);
+                                 show()
+                                 }
+                                 if (res.status=='error') {
+                                 // alert(res.data);
+                                 $("#add_span").html(res.data);
+                                 $("#add_span").css("color",'red');
+                   	 show()
+                   }
+                  
+    	 	}
+    	 	})
+
+    	 })
+    	
+     });
+    	 $('.delete').click(function(){
+              var __token__=$('#__token__').val()
+              var name=$('#name').val()
+              var description=$('#description').val()
+              var path=$('#path').val()
+              var category_id=$('#category_id').val()
+     
+    	    $.ajax({
+    	 	url:'{:url("permission/addAction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 		__token__:__token__,
+    	 		name:name,
+    	 		description:description,
+    	 		path:path,
+    	 		category_id:category_id,
+    	 	},
+    	 	success:function(res){
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	 show()
+                   }
+                  
+    	 	}
+    	 	})
+
+    	 })
+    	 $(document).on('click','.delete_one',function(){
+    	 	var id=$(this).attr('value')
+    	 	 var __token__=$('#__token__').val()
+    	 		    $.ajax({
+    	 	url:'{:url("permission/delete")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 		__token__:__token__,
+    	 		id:id,
+    	 	},
+    	 	success:function(res){
+    	 		console.log(res)
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	 show()
+                   }
+                  
+    	 	}
+    	 	})
+    	 })
+    	 function datadel(){
+      
+       var box=$(".mycheckbox:checked")
+		     	var id=''
+		        var __token__=$('#__token__').val()
+		     	for (var i = 0; i < box.length; i++) {
+		     		id=id+","+box[i].value
+		     	}
+		     	console.log(id)
+		     	$.ajax({
+		     		url:"{:url('permission/deleteMore')}",
+		     	    type:'post',
+		     		data:{
+		     			id:id,
+		     			__token__:__token__
+                    },
+                    dataType:'json',
+                    success:function (res) {
+                    	console.log(res)
+                    	if (res.status=='ok') {
+                    		alert("删除成功√")
+                    		show()
+                    		getToken()
+                    	}
+                    	
+                         	
+                    }
+		     	})
+ }     
 					
 </script>
 <script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  

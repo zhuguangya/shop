@@ -8,7 +8,7 @@
 				
 					<input type="text" placeholder="名称" value="" class="input-text" style="width:120px" id="name">
                     <input type="text" placeholder="描述" value="" class="input-text" style="width:120px" id="description">
-				<input id="__token__" name="__token__" value="{$Request.token}" />
+				<input id="__token__" name="__token__" value="{$Request.token}" hidden="" />
 				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button><span id="add_span"></span>
 				
 			</div>
@@ -170,13 +170,13 @@
                       	$.ajax({
              	               url:"{:url('permissioncate/deleteMore')}",
              	               type:'post',
-                               	data:{
-                                     id:id,
-                                     __token__:__token__,
-             	                   },
+                             data:{
+                                  id:id,
+                                  __token__:__token__,
+             	              },
              	                    dataType:'json',
                                   success:function(res){
-                                	 if (res.status=='ok') {                              
+                                	if (res.status=='ok') {                              
                                        show()
                                        getToken()
                                }
