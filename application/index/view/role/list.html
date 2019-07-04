@@ -7,7 +7,7 @@
 			<div class="text-c">
 				    <input id='__token__' type="" name="__token__" value="{$Request.token}" hidden="" />
 					
-				<a href="{:url('role/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button><span id="add_span"></span></a>
+				<a href="{:url('role/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span></a>
 				
 			</div>
 			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span>
@@ -20,10 +20,9 @@
 							<th width="25"><input type="checkbox" name="" value=""></th>
 							<th width="70">ID</th>
 						
-						    <th width="120">权限名称</th>
-							<th width="120">权限描述</th>
-						    <th width="120">权限路径</th>
-							<th width="120">权限分类</th>
+						    <th width="120">角色名称</th>
+							<th width="120">备注</th>
+						    
 							<th width="100">操作</th>
 						</tr>
 					</thead>
@@ -34,12 +33,272 @@
 			</div>
 		</article>
 	</div>
-	
+	<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<!-- <h3 class="modal-title">对话框标题</h3> -->
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <div class="row cl">
+				 <input type="text" value="" id="up_id" hidden="">
+				 角色名称：<input type="text" value="" id="up_name">
+				 备注：<input type="text" value="" id="up_description">
+				 <input type="hidden" id="__token__" value="{$Request.token}" hidden="" />
+				 <span id="up_span"></span>
+				 </div>
+				 <br>
+				 <div class="row cl">
+			          <!-- <label class="form-label col-xs-4 col-sm-3">网站角色：</label> -->
+			          <div class="formControls">
+				<dl class="permission-list"  id="permission-list">	
+			</div>
+		    </div>
+				 
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
 </section>
 {include file="footer"}
 <!--请在下方写此页面业务相关的脚本--> 
 <script>
- 
+  function modaldemo(id,name,description){
+  	    // var mycheckbox=$(".mycheckbox")
+  	   
+    	$("#up_id").val(id)
+    	$("#up_name").val(name)
+    	$("#up_description").val(description)
+    	$.ajax({
+    		url:'{:url("role/mypermissionShow")}',
+    		data:{
+    			id:id
+    		},
+    		success:function(res){
+                $(".mycheckbox").prop("checked",false);
+    			console.log(res.data)
+    			$.each(res.data,function(key,value){
+    				console.log(value)
+    				var p_id="p"+value.permission_id
+    				$("#"+p_id).prop('checked',true)
+    			})
+
+    		}
+    	})
+    	$("#modal-demo").modal("show")
+    }
+
+    // function getCate(str) {
+    // 	 $.ajax({
+    // 	 	url:'{:url("permissioncate/show")}',
+    // 	 	dataType:'json',
+    // 	 	success:function(res){
+    // 	 		var option=''
+    // 	 		for (var i = 0; i < res.length; i++) {	 			
+    // 	 			  	 option=option+"<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>"; 			   
+    // 	 		}
+    // 	 		$('#category_id').html(option)
+    // 	 		$('#up_category_id').html(option)
+    // 	 	}
+    // 	 })
+    // 	} getCate()
+
+    function up_action(){
+    	var id=$("#up_id").val()
+    	var name=$("#up_name").val()
+    	var description=$("#up_description").val()
+    	var mycheckbox=$('.mycheckbox:checked')
+        var __token__=$("#__token__").val()
+        var permission_id=''
+       for (var i = 0 ; i < mycheckbox.length; i++) {
+       	    permission_id=permission_id+','+mycheckbox[i].value
+       }
+    	 $.ajax({
+    	 	url:'{:url("role/updateaction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 	  	id:id,
+    	 		__token__:__token__,
+    	 		name:name,
+    	 		description:description,
+    	 		permission_id:permission_id
+    	 	},
+    	 	success:function(res){
+    	 		console.log(res)
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	$("#up_span").html()
+                   	$("#modal-demo").modal("hide")
+                   	 show()
+                   }
+                    if (res.status=='error') {
+                   	$("#up_span").html(res.data)
+                   	 
+                   }
+    	 	    }
+    	 	})
+    }
+
+
+    function show() {
+    	 $.ajax({
+    	 	url:'{:url("role/show")}',
+    	 	success:function(res){
+    	 		var data=res.data
+    	 		var tr=''
+    	 		for (var i = 0; i < data.length; i++) {
+    	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\")'  title='编辑'><i>详情</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+    	 		}
+    	 		$('.table tbody').html(tr)
+    	
+    	       }
+
+    	    })
+    	 }
+    	  show()
+ //    	 $(document).ready(function(){
+ //          $('#add').click(function(){
+ //              var __token__=$('#__token__').val()
+ //              var name=$('#name').val()
+ //              var description=$('#description').val()
+ //              var path=$('#path').val()
+ //              var category_id=$('#category_id').val()
+     
+ //    	    $.ajax({
+ //    	 	url:'{:url("permission/addAction")}',
+ //    	 	  type:'post',
+ //    	 	  data:{
+ //    	 		__token__:__token__,
+ //    	 		name:name,
+ //    	 		description:description,
+ //    	 		path:path,
+ //    	 		category_id:category_id,
+ //    	 	},
+ //    	 	success:function(res){
+ //    	 		   getToken()
+ //                   console.log(res)
+ //                   if (res.status=='ok') {
+ //                   	 $("#add_span").html(res.data);
+ //                                 $("#add_span").css("color",'green');
+ //                                 $("#name").val('');
+ //                                 $("#description").val('');
+ //                                 $("#path").val('');
+ //                                 $("#category_id").val('');
+ //                                 setTimeout(function(){
+ //                                 $("#add_span").html('');
+ //                                   },3000);
+ //                                 show()
+ //                                 }
+ //                                 if (res.status=='error') {
+ //                                 // alert(res.data);
+ //                                 $("#add_span").html(res.data);
+ //                                 $("#add_span").css("color",'red');
+ //                   	 show()
+ //                   }
+                  
+ //    	 	}
+ //    	 	})
+
+ //    	 })
+    	
+ //     });
+ //    	 $('.delete').click(function(){
+ //              var __token__=$('#__token__').val()
+ //              var name=$('#name').val()
+ //              var description=$('#description').val()
+ //              var path=$('#path').val()
+ //              var category_id=$('#category_id').val()
+     
+ //    	    $.ajax({
+ //    	 	url:'{:url("permission/addAction")}',
+ //    	 	  type:'post',
+ //    	 	  data:{
+ //    	 		__token__:__token__,
+ //    	 		name:name,
+ //    	 		description:description,
+ //    	 		path:path,
+ //    	 		category_id:category_id,
+ //    	 	},
+ //    	 	success:function(res){
+ //    	 		   getToken()
+ //                   if (res.status=='ok') {
+ //                   	 show()
+ //                   }
+                  
+ //    	 	}
+ //    	 	})
+
+ //    	 })
+    	 $(document).on('click','.delete_one',function(){
+    	 	var id=$(this).attr('value')
+    	 	 var __token__=$('#__token__').val()
+    	 		    $.ajax({
+    	 	url:'{:url("role/delete")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 		__token__:__token__,
+    	 		id:id,
+    	 	},
+    	 	success:function(res){
+    	 		console.log(res)
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	 show()
+                   }
+                  
+    	 	}
+    	 	})
+    	 })
+    	 function datadel(){
+      
+         var box=$(".mycheckbox:checked")
+		     	var id=''
+		        var __token__=$('#__token__').val()
+		     	for (var i = 0; i < box.length; i++) {
+		     		id=id+","+box[i].value
+		     	}
+		     	console.log(id)
+		     	$.ajax({
+		     		url:"{:url('role/deleteMore')}",
+		     	    type:'post',
+		     		data:{
+		     			id:id,
+		     			__token__:__token__
+                    },
+                    dataType:'json',
+                    success:function (res) {
+                    	console.log(res)
+                    	if (res.status=='ok') {
+                    		alert("删除成功√")
+                    		show()
+                    		getToken()
+                    	}   	
+                    }
+		   })
+ }    
+ $.ajax({
+    	 	url:'{:url('role/permissionShow')}',
+    	 	success:function(res){
+    	 		var data=res.data
+    	 		//console.log(data)
+    	 		d1=''
+                $.each(data,function( key,value){
+                 d1=d1+"<dt><label class='' style='color:blue'><input type='checkbox' value='' >"+key+"</label></dt><dd><d1 class='c1 permission-list2'>";
+                 //console.log(value)
+                 $.each(value, function( key1,value1){
+                 d1=d1+"<label class=''><input type='checkbox' class='mycheckbox' id='p"+value1['id']+"' value='"+value1['id']+"'>"+value1['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                 })
+                 d1=d1+"</dd>";
+                });
+                console.log(d1)
+                $('#permission-list').html(d1)
+    	 	    }
+    	 	}) 
 					
 </script>
 <script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  

@@ -10,9 +10,10 @@ class Role extends Common
       return $this->fetch();
     }
     public function show()
-    { 
+    {    
+    	// select r.id,r.name,r.description,p.name as p_name from permission as p join role_permission as r_p on p.id=r_p.permission_id join role as r on r.id=r_p.role_id
          $rbac= new Rbac();
-         $arr=Db::query("select p.id,p.name,p.description,p.path,p_c.name as p_c_name,p.category_id from permission as p join permission_category as p_c on p.category_id=p_c.id");
+         $arr=Db::query("select id,name,description from role");
          $json=['code'=>'0','status'=>'ok','data'=>$arr];
          return json($json);
 
@@ -22,8 +23,6 @@ class Role extends Common
     { 
          $rbac= new Rbac();
          $arr=Db::query("select p.id,p.name,p.description,p.path,p_c.name as p_c_name,p.category_id from permission as p join permission_category as p_c on p.category_id=p_c.id");
-         // var_dump($arr);
-         // die;
          $newarr=[];
          foreach ($arr as $key => $value) {
          	 $newarr[$value['p_c_name']][]=$value;
@@ -35,36 +34,50 @@ class Role extends Common
 
     	
     }
-    // public function updateAction(){
-    //      $data=Request::post();
-    //     $validate = new \app\index\validate\Permission;
-    //     if (!$validate->check($data)) {
-    //         $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
-    //         return json($arr);
-    //     }
-    //     unset($data['__token__']);
-    //     $rbac= new Rbac;
-    //     //$getname=$rbac->getPermission([['name','=',$data['name']]]);
-    //     $name=$data['name'];
-    //     $path=$data['path'];
-    //     $arr=Db::query("select * from permission where name='$name' or path='$path'");
-    //      if (empty($arr)) {
-    //         $arr=Db::table('permission')->update($data);
-    //         $arr=['code'=>'0','status'=>'ok','data'=>'修改成功'];
-    //         return json($arr);
-    //     }else{
-    //         foreach ($arr as $key => $value) {
-    //             if ($value['id']!=$data['id']) {
-    //                 $arr=['code'=>'2','status'=>'error','data'=>'name或者path已经存在'];
-    //                 return json($arr);
-    //             }
-    //         }
-    //         $arr=Db::table('permission')->update($data);
-    //         $arr=['code'=>'0','status'=>'ok','data'=>'修改成功'];
-    //         return json($arr);
-    //     }
+    public function mypermissionShow()
+    {    
+    	 $id=Request::get('id');
+         $rbac= new Rbac();
+         $arr=Db::query("select permission_id from role_permission where role_id='$id'");
+     
+         $json=['code'=>'0','status'=>'ok','data'=>$arr];
+         return json($json);
 
-    // }
+    	
+    }
+    public function updateAction(){
+         $data=Request::post();
+        $validate = new \app\index\validate\Role;
+        if (!$validate->check($data)) {
+            $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            return json($arr);
+        }
+        unset($data['__token__']);
+        $rbac= new Rbac;
+        //$getname=$rbac->getPermission([['name','=',$data['name']]]);
+        $name=$data['name'];
+        $id=$data['id'];
+        $permission_id=$data['permission_id'];
+        $up_data=$data;
+        unset($up_data['__token__']);
+        unset($up_data['permission_id']);
+        $arr=Db::query("select * from role where name='$name'");
+         if (empty($arr)||!empty($arr)&&$arr[0]['id']==$data['id']) {
+            $arr=Db::table('role')->update($up_data);
+            //删除 重新入库
+            $arr=Db::query("delete from role_permission where role_id='$id'");
+            	$pid_arr=explode(',', $permission_id);
+            	array_shift($pid_arr);
+            	foreach ($pid_arr as $key => $value) {
+            		$arr=Db::query("insert into `role_permission`(`role_id`,`permission_id`) values ('$id','$value')");
+            	}
+            	$arr=['code'=>'0','status'=>'ok','data'=>'修改成功'];
+        }else{
+                $arr=['code'=>'1','status'=>'error','data'=>'名字重复'];
+           	    
+        }
+                 return json($arr);
+    }
     public function addAction()
     {   
         $data=Request::post();
@@ -98,43 +111,44 @@ class Role extends Common
         }
        
     }
-   // function delete(){
-   //      $data=Request::post();
-   //      $validate = new \app\index\validate\Delete;
-   //      if (!$validate->check($data)) {
-   //          $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
-   //          return json($arr);
-   //      }
-   //      $rbac= new Rbac();
-   //      $id=$data['id'];
-   //      $rbac->delPermission([$id]);
-   //      $arr=['code'=>'1','status'=>'ok','data'=>'删除成功'];
-   //      return json($arr);
-   // }
-   //  public function deleteMore()
-   //  {    
-   //      $data=Request::post();
-   //      $validate = new \app\index\validate\Delete;
-   //      if (!$validate->check($data)) {
-   //          $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
-   //          // return json($arr);
-   //          echo json_encode($arr);
-   //          die;
-   //      }
-   //       $id=Request::post('id');
-   //       if (empty($id)) {
-   //           $arr=['code'=>'2','status'=>'error','data'=>'不能为空'];
-   //           echo json_encode($arr);
-   //           die;
-   //       }
+    public function delete(){
+    	$data=Request::post();
+    	$validate = new \app\index\validate\Delete;
+        if (!$validate->check($data)) {
+            $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            return json($arr);
+        }
+    	$rbac=new Rbac();
+    	
+    	$rbac->delRole([$data['id']]);
+    	$json=['code'=>'0','status'=>'ok','data'=>'删除成功'];
+    	return json($json);
+    }
+  
+    public function deleteMore()
+    {    
+        $data=Request::post();
+        $validate = new \app\index\validate\Delete;
+        if (!$validate->check($data)) {
+            $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            // return json($arr);
+            echo json_encode($arr);
+            die;
+        }
+         $id=Request::post('id');
+         if (empty($id)) {
+             $arr=['code'=>'2','status'=>'error','data'=>'不能为空'];
+             echo json_encode($arr);
+             die;
+         }
 
-   //       $arr=explode(',', $id);
-   //       array_shift($arr);
-   //       $rbac= new Rbac();
-   //       $rbac->delPermission($arr);
-   //       $arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
-   //       echo json_encode($arr);
-   //  }
+         $arr=explode(',', $id);
+         array_shift($arr);
+         $rbac= new Rbac();
+         $rbac->delRole($arr);
+         $arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
+         echo json_encode($arr);
+    }
      public function add()
     {
       return $this->fetch();
