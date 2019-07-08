@@ -30,6 +30,7 @@
 		<div class="row cl">
 			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
 				<button type="button" class="btn btn-success radius" id="add" name="admin-role-save"><i class="icon-ok"></i> 确定</button>
+         <span id="add_span"></span>
 			</div>
 		</div>
 	</form>
@@ -59,7 +60,23 @@
        	success:function(res){
        		getToken()
        		console.log(res)
-       	}
+           if (res.status=='ok') {
+                     $("#add_span").html(res.data);
+                                 $("#add_span").css("color",'green');
+                                 $("#name").val('');
+                                 $("#description").val('');
+                                 setTimeout(function(){
+                                 $("#add_span").html('');
+                                   },3000);
+                                 show()
+                                 }
+                                 if (res.status=='error') {
+                                 // alert(res.data);
+                                 $("#add_span").html(res.data);
+                                 $("#add_span").css("color",'red');
+                     
+                   }
+           	}
        })
 	})
 	$.ajax({

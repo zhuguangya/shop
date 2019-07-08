@@ -61,6 +61,7 @@ class Permission extends Common
         $getname=$rbac->getPermission([['name','=',$data['name']]]);
         $getpath=$rbac->getPermission([['path','=',$data['path']]]);
         
+        
         if (empty($getname)&&empty($getpath)) {
              $arr=$rbac->createPermission([
             'name' => $data['name'],

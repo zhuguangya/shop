@@ -27,7 +27,9 @@ class Login extends controller
                  $res=Db::table('user')->where($where)->find();
       if (empty($res)) {
                  $arr=['code'=>'2','status'=>'error','message'=>'账号或密码错误'];
-      }else{
+      }else{     
+                 $rbac= new Rbac();
+                 $rbac->cachePermission($res['id']);
                  $arr=['code'=>'0','status'=>'ok','message'=>'登录成功'];
                  Session::set('name',$name);
                

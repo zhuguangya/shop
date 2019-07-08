@@ -149,91 +149,22 @@
     	 $.ajax({
     	 	url:'{:url("role/show")}',
     	 	success:function(res){
+                if (res.status=='error') {
+                      alert('没有权限')
+                }else{
     	 		var data=res.data
     	 		var tr=''
     	 		for (var i = 0; i < data.length; i++) {
     	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\")'  title='编辑'><i>详情</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
     	 		}
     	 		$('.table tbody').html(tr)
-    	
+        	   }
     	       }
 
     	    })
     	 }
     	  show()
- //    	 $(document).ready(function(){
- //          $('#add').click(function(){
- //              var __token__=$('#__token__').val()
- //              var name=$('#name').val()
- //              var description=$('#description').val()
- //              var path=$('#path').val()
- //              var category_id=$('#category_id').val()
-     
- //    	    $.ajax({
- //    	 	url:'{:url("permission/addAction")}',
- //    	 	  type:'post',
- //    	 	  data:{
- //    	 		__token__:__token__,
- //    	 		name:name,
- //    	 		description:description,
- //    	 		path:path,
- //    	 		category_id:category_id,
- //    	 	},
- //    	 	success:function(res){
- //    	 		   getToken()
- //                   console.log(res)
- //                   if (res.status=='ok') {
- //                   	 $("#add_span").html(res.data);
- //                                 $("#add_span").css("color",'green');
- //                                 $("#name").val('');
- //                                 $("#description").val('');
- //                                 $("#path").val('');
- //                                 $("#category_id").val('');
- //                                 setTimeout(function(){
- //                                 $("#add_span").html('');
- //                                   },3000);
- //                                 show()
- //                                 }
- //                                 if (res.status=='error') {
- //                                 // alert(res.data);
- //                                 $("#add_span").html(res.data);
- //                                 $("#add_span").css("color",'red');
- //                   	 show()
- //                   }
-                  
- //    	 	}
- //    	 	})
-
- //    	 })
-    	
- //     });
- //    	 $('.delete').click(function(){
- //              var __token__=$('#__token__').val()
- //              var name=$('#name').val()
- //              var description=$('#description').val()
- //              var path=$('#path').val()
- //              var category_id=$('#category_id').val()
-     
- //    	    $.ajax({
- //    	 	url:'{:url("permission/addAction")}',
- //    	 	  type:'post',
- //    	 	  data:{
- //    	 		__token__:__token__,
- //    	 		name:name,
- //    	 		description:description,
- //    	 		path:path,
- //    	 		category_id:category_id,
- //    	 	},
- //    	 	success:function(res){
- //    	 		   getToken()
- //                   if (res.status=='ok') {
- //                   	 show()
- //                   }
-                  
- //    	 	}
- //    	 	})
-
- //    	 })
+ 
     	 $(document).on('click','.delete_one',function(){
     	 	var id=$(this).attr('value')
     	 	 var __token__=$('#__token__').val()

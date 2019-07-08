@@ -16,9 +16,16 @@ class Role extends Common
          $arr=Db::query("select id,name,description from role");
          $json=['code'=>'0','status'=>'ok','data'=>$arr];
          return json($json);
-
-    	
     }
+
+     public function show1()
+        {
+        
+         $rbac= new Rbac();
+         $arr=Db::query("select id,name,description from role");
+          echo  json_encode($arr);
+        }
+        
      public function permissionShow()
     { 
          $rbac= new Rbac();
