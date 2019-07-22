@@ -1,0 +1,86 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c">
+				<input type="file" id="file" multiple>
+                <input type="text" name="" id="goods_id" value="{$goods_id}" hidden="">
+				<span><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span><span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">big_img</th>
+							<th width="120">middle_img</th>
+							<th width="120">small_img</th>
+							<th width="120">goods_id</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+</article>
+</div>
+</section>
+{include file="footer"}
+<!--_footer 作为公共模版分离出去-->
+<script>
+      function show() {
+      	var goods_id=$("#goods_id").val()
+      	 $.ajax({
+      	 	url:'{:url("goodsimg/goodsimgshow")}',
+             type:'post',
+             data:{
+             	goods_id:goods_id,
+             },
+      	 	success:function(res){
+      	 		var data=res.data
+    	 		var tr=''
+    	 		for (var i = 0; i < data.length; i++) {
+    	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'><td>"+data[i]['id']+"</td></td><td> <img style='height:30px,width:30px' src='/uploads/goodsimg/"+data[i]['big_img']+"'></td><td><img style='height:30px,width:30px' src='/uploads/goodsimg/"+data[i]['middle_img']+"'></td><td><img style='height:30px,width:30px' src='/uploads/goodsimg/"+data[i]['samll_img']+"'></td><td>"+data[i]['goods_id']+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo()'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete()' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+    	 		}
+    	 		$('.table tbody').html(tr)
+      	 	}
+      	 })
+      } show()
+
+      $('#add').click(function () {
+                      	var file=$("#file")[0].files
+
+                      	var goods_id=$("#goods_id").val()
+                        
+                        var formData=new FormData
+
+                         formData.append('goods_id', goods_id)
+                        for (var i = 0; i < file.length; i++) {
+                          formData.append('file[]', file[i]);
+                        }
+                       
+		                 $.ajax({
+                      	 url:"{:url('goodsimg/goodsimgadd')}",
+				       	 type:'post',
+				       	 data:formData,
+				       	 contentType:false,
+				       	 processData: false,
+				       	 cache:false,
+				       	 success:function (res) {
+				       	 	console.log(res)
+	    	    			show()
+				       	}
+		            })
+                })
+     
+</script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  
+<script type="text/javascript" src="__STATIC__/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__STATIC__/hui/lib/laypage/1.2/laypage.js"></script>

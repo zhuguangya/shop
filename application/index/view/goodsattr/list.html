@@ -1,0 +1,118 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+  
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c">
+				<input type="text" name="" id="goods_id" value="{$goods_id}" >
+				属性分类：<select name="attr_id" id="attr_id">
+				</select>
+				<a><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i>添加</button></span></a>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <a href="{:url('goods/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 商品添加</button></span></a> <a href="{:url('attribute/list')}"><button type="button" class="btn btn-success" id="" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 商品属性添加</button></span></a> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">商品名称</th>
+							<th width="120">所属分类</th>
+							<th width="120">所属品牌</th>
+							<th width="120">商品状态</th>
+							<th width="120">商品价格</th>
+							<th width="120">图片</th>
+							<th width="100">属性</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				<dl class="permission-list"  id="attribute-list"></dl>
+			</div>
+        </article>
+    </div>
+</section>
+{include file="footer"}
+<!--_footer 作为公共模版分离出去-->
+<script>
+   function getCate(str) {
+
+       $.ajax({
+         url:'{:url("attribute/show1")}',
+         dataType:'json',
+         success:function(res){
+            console.log(res)
+            
+            var option="<option value='0'>分类</option>"
+            for (var i = 0; i < res.length; i++) {	 			
+               option=option+"<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>"; 			   
+           }
+           $('#attr_id').html(option)
+       }
+   })
+   } getCate()
+
+   $("#attr_id").change(function(){
+    var attrs_id=$("#attr_id").val()
+    var goods_id=$("#goods_id").val()
+    $.ajax({
+     url:'{:url('goodsattr/attributeShow')}',
+     data:{
+        attrs_id:attrs_id,
+        goods_id:goods_id,
+    },
+    type:'post',
+    dataType:'json',
+    success:function(res){
+        var data=res.data
+        console.log(data)
+        d1=''
+        $.each(data,function( key,value){
+           d1=d1+"<dt><label class='' style='color:blue'><input type='checkbox' value='' >"+key+"</label></dt><dd><d1 class='c1 permission-list2'>";
+                 //console.log(value)
+                 $.each(value, function( key1,value1){
+                   d1=d1+"<label class=''><input type='checkbox' id='ad"+value1['id']+"' class='mycheckbox' value='"+value1['id']+"'>"+value1['a_d_name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+               })
+                 d1=d1+"</dd>";
+             });
+        console.log(d1)
+        $('#attribute-list').html(d1)
+        var mydefault=res.default
+        console.log(mydefault)
+        for (var i = 0; i < mydefault.length;i++){
+            id=mydefault[i].attr_details_id
+            $('#ad' +id).prop('checked',true)
+        }
+    }
+})
+})
+   $("#add").click(function(){
+       var goods_id=$("#goods_id").val()
+       var attr_id=$("#attr_id").val()
+       var mycheckbox=$('.mycheckbox:checked')
+       var attribute_id=''
+       for (var i = 0 ; i < mycheckbox.length; i++) {
+           attribute_id=attribute_id+','+mycheckbox[i].value
+       }
+       $.ajax({
+          url:'{:url("goodsattr/addAction")}',
+          type:'post',
+          data:{
+             goods_id:goods_id,
+             attr_id:attr_id,
+             attribute_id:attribute_id,
+         },
+         success:function(res){
+          
+         }
+     })
+   })
+</script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  
+<script type="text/javascript" src="__STATIC__/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__STATIC__/hui/lib/laypage/1.2/laypage.js"></script>

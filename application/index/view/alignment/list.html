@@ -1,0 +1,159 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c">
+		        <input type="text" name="" id="attrcate_id" value="{$attrcate_id}" hidden="">
+				<input type="" name="" id="name">
+				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span></span>  <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">属性分类</th>
+							<th width="120">属性名称</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+</article>
+</div>
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">属性修改</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <div class="row cl">
+				 	<input type="text" value="" id="up_id" hidden="">
+				 属性名称：<input type="text" value="" id="up_name">
+				 <input type="hidden" id="__token__" value="{$Request.token}" hidden="" />
+				 <span id="add_span"></span>
+				 </div>
+				 <br>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary"  onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+</section>
+{include file="footer"}
+<!--_footer 作为公共模版分离出去-->
+<script>
+	 $("#add").click(function() {
+	 	var name=$("#name").val()
+	 	var attrcate_id=$("#attrcate_id").val()
+	 	console.log(name)
+	 	  $.ajax({
+	 	  	url:'{:url("alignment/addAction")}',
+	 	  	type:'post',
+	 	  	data:{
+	 	  		attrcate_id:attrcate_id,
+	 	  		name:name,
+	 	  	},
+	 	  	success:function(res){
+                 console.log(res)
+                 if (res.status=='ok') {
+                 	$("#name").val('')
+                 	$("#show").html(res.data)
+                 	setTimeout(function(){
+                    $("#show").html('');
+                 	},3000);
+                 }
+                 if(res.status=='error'){
+                 	$("#show").html(res.data)
+                 }
+                 show()
+	 	  	}   
+	 	  })
+	 	 
+	 })
+     function show() {
+      	var attrcate_id=$("#attrcate_id").val()
+      	 $.ajax({
+      	 	 url:'{:url("alignment/show")}',
+             type:'post',
+             data:{
+             	attrcate_id:attrcate_id,
+             },
+      	 	success:function(res){
+      	 		var data=res.data
+    	 		var tr=''
+    	 		for (var i = 0; i < data.length; i++) {
+    	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'><td>"+data[i]['id']+"</td></td><td>"+data[i]['uname']+"</td><td>"+data[i]['name']+"<a href='{:url('attrdetails/list')}?id="+data[i]['id']+"'>➕ </a></td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+    	 		}
+    	 		$('.table tbody').html(tr)
+      	 	}
+      	 })
+      } show()
+    function modaldemo(id,name){
+    $("#up_id").val(id)
+    $("#up_name").val(name)
+	$("#modal-demo").modal("show")
+    }
+    function up_action(){
+        var attrcate_id=$("#attrcate_id").val()
+    	var up_id=$("#up_id").val()
+    	var up_name=$('#up_name').val()
+    	$.ajax({
+    		url:'{:url("alignment/updateAction")}',
+    		type:'post',
+    		data:{
+                attrcate_id:attrcate_id,
+    			up_id:up_id,
+                up_name:up_name,
+    		},
+    		dataType:'json',
+    		success:function(res){
+                if (res.status=='ok') {
+                   	$("#modal-demo").modal("hide")
+                   	 show()
+                   }
+                    if (res.status=='error') {
+                   	$("#add_span").html(res.data)
+                   	 
+                   }
+    		}
+    	})
+    }
+    function mydelete(id){
+    	  	$.ajax({
+    	  		url:"{:url('alignment/delete')}",
+    	  		type:'post',
+    	  		data:{
+    	  			id:id,
+    	  		},
+    	  		dataType:'json',
+    	  		success:function(res){
+    	  			if(res.status=='ok'){
+    	  				alert('删除成功👌');
+    	  				show()
+    	  			}
+    	  			if (res.status=='error') {
+    	  				alert('下面有属性细分不能删除');
+    	  				show()
+    	  			}
+    	  		}
+    	  	})
+    }
+
+</script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  
+<script type="text/javascript" src="__STATIC__/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__STATIC__/hui/lib/laypage/1.2/laypage.js"></script>

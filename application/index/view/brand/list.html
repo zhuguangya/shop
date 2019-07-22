@@ -1,0 +1,221 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c">
+				
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <a href="{:url('brand/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span></a>  <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">品牌名称</th>
+							<th width="120">品牌描述</th>
+							<th width="120">品牌网址</th>
+							<th width="200">LOGO</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</article>
+		<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <input type="text" value="" id="brand_id" hidden="">
+				 品牌名称：<input type="text" placeholder="品牌名称" value="" class="input-text" style="width:220px" id="brand_name">
+				 <br>
+				 品牌描述：<input type="text" placeholder="品牌名称" value="" class="input-text" style="width:220px" id="brand_desc">
+				 <br>
+				 品牌网址：<input type="text" placeholder="品牌名称" value="" class="input-text" style="width:220px" id="site_url">
+				 <span id="up_span"></span>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="modal-demo1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <span id="up_id" hidden=""></span>
+				 原始图片：<img src="" id="up_img">
+				 <br>
+				 更改图片:
+				 <span id="newimg"></span>
+				 <input type="file" id="up_brand_logo" name="up_brand_logo">
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" id="logo_update">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+	</div>
+</section>
+{include file="footer"}
+<!--请在下方写此页面业务相关的脚本--> 
+<script>
+      function show() {
+    	 $.ajax({
+    	 	url:'{:url("brand/show")}',
+    	 	dataType:'json',
+    	 	success:function(res){
+    	 		var data=res.data
+    	 		var tr=''
+    	 		for (var i = 0; i < data.length; i++) {
+    	 			   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['brand_id']+"'><td>"+data[i]['brand_id']+"</td></td><td>"+data[i]['brand_name']+"</td><td>"+data[i]['brand_desc']+"</td><td>"+data[i]['site_url']+"</td><td><img style='height:30px,width:30px' src='/uploads/"+data[i]['brand_logo']+"'><a onclick='modaldemo1(\""+data[i]['brand_id']+"\",\""+data[i]['brand_logo']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a></td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo(\""+data[i]['brand_id']+"\",\""+data[i]['brand_name']+"\",\""+data[i]['brand_desc']+"\",\""+data[i]['site_url']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['brand_id']+"\",\""+data[i]['brand_logo']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+    	 		}
+    	 		$('.table tbody').html(tr)
+    	 		}
+    	      })
+    	    }show()
+    function modaldemo(){
+	        $("#modal-demo").modal("show")
+      }
+    function modaldemo(brand_id,brand_name,brand_desc,site_url){
+    	$("#brand_id").val(brand_id)
+    	$("#brand_name").val(brand_name)
+    	$("#brand_desc").val(brand_desc)
+    	$("#site_url").val(site_url)
+    	$("#modal-demo").modal("show")
+    }
+    function up_action(){
+    	var brand_id=$("#brand_id").val()
+    	var brand_name=$("#brand_name").val()
+    	var brand_desc=$("#brand_desc").val()
+    	var site_url=$("#site_url").val()
+    	 $.ajax({
+    	 	url:'{:url("brand/updateaction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 	  	brand_id:brand_id,
+            brand_name:brand_name,
+    	 		  brand_desc:brand_desc,
+    	 		  site_url:site_url,
+    	 	},
+    	 	success:function(res){
+    	 		   console.log(res)
+    	 		   getToken()
+                   if (res.status=='ok') {
+                   	$("#modal-demo").modal("hide")
+                   	 show()
+                   }
+                    if (res.status=='error') {
+                   	$("#up_span").html(res.data)
+                   	 
+                   }
+    	 	    }
+    	 	})
+    }
+
+    function mydelete(brand_id,brand_logo){
+                        $.ajax({
+                           	url:"{:url('brand/delete')}",
+                          	type:'post',
+                            data:{
+                                  brand_id:brand_id,
+                                  brand_logo:brand_logo
+                           	   },
+                            dataType:'json',
+                            success:function(res){
+                            if (res.status=='ok') {                                
+                               show()
+                            }
+                        }
+                 })
+           }  
+
+           function deletemore() {
+           	 var box=$(".mycheckbox:checked")
+           	 var id=''
+           	 for (var i = 0; i < box.length; i++) {
+           	 	id=id+","+box[i].value
+           	 }
+           	 $.ajax({
+           	 	url:"{:url('brand/delete2')}",
+           	 	type:'post',
+           	 	data:{
+           	 		id:id
+           	 	},
+           	 	dataType:'json',
+           	 	success:function (res) {
+           	 		console.log(res)
+           	 		if (res.status=='ok') {
+                    		alert("删除成功√")
+                    		show()
+                    	}   
+           	 	}
+           	 })
+           }
+
+           function modaldemo1(){
+	        $("#modal-demo1").modal("show")
+      }
+         function modaldemo1(brand_id,brand_logo){
+         	$("#up_id").html(brand_id)
+         	$("#up_img").attr('src','/uploads/'+brand_logo)
+         	$("#modal-demo1").modal("show")
+         }
+         $("#up_brand_logo").on('change',function(){
+             var filePath=$(this).val()
+             fileFormat=filePath.substring(filePath.lastIndexOf(".")).toLowerCase(),
+             src=window.URL.createObjectURL(this.files[0])
+             if(!fileFormat.match(/.png|.jpg|.jpeg/)){
+             	error_prompt_alert('上传错误,文件格式错误：png/jpg/jpeg');
+             	return;
+             }
+              $("#newimg").html("<img src='"+src+"' style='width:60px; height:30px;'>")
+         });
+
+         $("#logo_update").click(function(){
+         	var brand_id=$("#up_id").html()
+         	var old_logo=$("#up_img").attr('src')
+         	var formData = new FormData();
+         	formData.append('brand_id',brand_id);
+         	formData.append("old_logo",old_logo);
+         	formData.append('brand_logo',$('input[name=up_brand_logo]')[0].files[0]);
+         	$.ajax({
+         		url:"{:url('brand/imgupdate')}",
+         		data:formData,
+         		contentType:false,
+         		processData:false,
+         		cache:false,
+         		dataType:'json',
+         		method:'POST',
+         		success:function(res){
+         			show()
+         			if(res.status=='ok'){
+         				$("#up_id").html('')
+         				$("#newimg").html('')
+         				$("#modal-demott").modal("hide")
+         			}
+         		}
+         	})
+
+         })
+</script>
+<script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  
+<script type="text/javascript" src="__STATIC__/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__STATIC__/hui/lib/laypage/1.2/laypage.js"></script>

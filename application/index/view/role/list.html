@@ -10,9 +10,7 @@
 				<a href="{:url('role/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span></a>
 				
 			</div>
-			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span>
-
-       <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
 					<thead>
@@ -164,7 +162,7 @@
     	    })
     	 }
     	  show()
- 
+  
     	 $(document).on('click','.delete_one',function(){
     	 	var id=$(this).attr('value')
     	 	 var __token__=$('#__token__').val()

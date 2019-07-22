@@ -15,7 +15,7 @@ class User extends Common
          $arr=Db::query("select user.id,user.user_name,user.password,user.mobile,role.name,create_time from user join user_role on user.id=user_role.user_id join role on role.id=user_role.role_id");
          $json=['code'=>'0','status'=>'ok','data'=>$arr];
          return json($json);
-    }
+     }    
     public function addAction()
     {   
         $data=Request::post();
@@ -31,7 +31,7 @@ class User extends Common
         $mobile=$data['mobile'];
         $role_id=$data['role_id'];
         $arr=Db::query("select * from user where  user_name='$user_name' or mobile='$mobile'");
-      
+        
         if(empty($arr)){
         	$datatime=date("Y-m-d H:i:s" ,time());
         	$arr=Db::query("insert into user (`user_name`,`password`,`mobile`,`create_time`) values('$user_name','$password','$mobile','$datatime')");
@@ -93,12 +93,12 @@ class User extends Common
      public function updateAction(){
      
         $data=Request::post();
-        $validate = new \app\index\validate\Delete;
-        if (!$validate->check($data)) {
-            $data=['code'=>'1','status'=>'error','data'=>$validate->getError()];
-            echo $json=json_encode($data);
-            die;
-        }
+        // $validate = new \app\index\validate\User;
+        // if (!$validate->check($data)) {
+        //     $data=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+        //     echo $json=json_encode($data);
+        //     die;
+        // }
         $rbac= new Rbac;
         $name=$data['up_user_name'];
         $password=$data['up_password'];

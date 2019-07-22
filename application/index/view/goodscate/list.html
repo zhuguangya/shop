@@ -1,0 +1,159 @@
+ {include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 品牌管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div class="text-c">
+				<input type="hidden" id="__token__" value="{$Request.token}" hidden="" />
+				添加：
+				<span id="pid" value='0'>一级分类</span>
+				的子类
+				<input type="" id="name" name="">
+				<button type="button" class="btn btn-success " id="add" name="" onclick=""><i class="Hui-iconfont"></i> 添加</button>
+				<span id="add_span"></span>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <a href="{:url('brand/add')}"><button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span></a>  <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<!-- <style>
+				#mytree li ul{
+					display: none
+				}
+			</style> -->
+			<div class="mt-10" id="mytree">
+		       <ul style="list-style-type:block;">
+			    <li>123</li>
+		        </ul>
+			</div>
+	        
+		</article>
+		<div id="modal-demo1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				<input type="text" value="" id="id" hidden="">
+				 分类名称：<input type="text" placeholder="分类名称" value="" class="input-text" style="width:220px" id="name1">
+				 
+				 <span id="up_span"></span>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+	</div>
+</section>
+{include file="footer"}
+<!--请在下方写此页面业务相关的脚本--> 
+<script>
+	function show() {
+		$.ajax({
+			url:'{:url("goodscate/show")}',
+			success:function(res){
+				//console.log(res)
+				$('#mytree').html(res)
+			}
+		})
+	}show()
+
+		$(document).ready(function(){
+				$(document).on('click','li',function(){
+					pid_html=$(this).html()
+					pid=$(this).attr('value')
+					$("#pid").html(pid_html)
+					$("#pid").attr('value',pid)
+					var bool=$(this).next().css('display')
+					console.log(bool)
+					if (bool=='none') {
+					    $(this).next().css('display','block')
+					}
+					if (bool=='block') {
+					    $(this).next().css('display','none')
+					}
+				})
+         $("#add").click(function(){
+				        var __token__=$('#__token__').val()
+						var name=$('#name').val()
+						var pid=$('#pid').attr('value')
+				
+					     $.ajax({
+                           url:"{:url('goodscate/addAction')}",
+                           type:'post',
+                           data:{
+                           	  pid:pid,
+                           	  name:name,
+                           	  __token__:__token__
+                           },
+                           success:function(res){
+                             getToken()
+                           if (res.status=='ok') {
+                              //show()
+                           	  $('#id'+pid).next().append('<li value="'+res.data+'" id="id'+res.data+'">'+name+'</li>');
+                           	  show()
+                           }
+                        }
+
+					    })
+					});
+               })
+	function modaldemo(){
+	        $("#modal-demo").modal("show")
+      }
+    
+	function modaldemo(id){
+             $.ajax({
+             	url:"{:url('goodscate/delete')}",
+             	type:'post',
+             	data:{
+             	  id:id,
+                },
+                dataType:'json',
+                success:function(res){
+                console.log(res)
+                alert(123)
+                show()
+             }
+         });
+    }
+    function modaldemo1(){
+	        $("#modal-demo1").modal("show")
+      }
+    function modaldemo1(id,name1){
+     	    $("#id").val(id)
+    	    $("#name1").val(name1)
+    	    $("#modal-demo1").modal("show")
+    }
+    function up_action(){
+    	var id=$("#id").val()
+    	var name=$("#name1").val()
+    	$.ajax({
+    	      url:'{:url("goodscate/updateaction")}',
+    	 	  type:'post',
+    	 	  data:{
+    	 	  id:id,
+               name:name,
+    	 	},
+    	 	success:function(res){
+    	    console.log(res)
+            if (res.status=='ok') {
+            $("#modal-demo").modal("hide")
+             show()
+            }
+            if (res.status=='error') {
+            $("#up_span").html(res.data)
+                   	 
+            }
+    	  }
+      });
+    }
+    
+
+</script>
+<script type="text/javascript" src="__STATIC__/hui/lib/My97DatePicker/4.8/WdatePicker.js"></script>  
+<script type="text/javascript" src="__STATIC__/hui/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__STATIC__/hui/lib/laypage/1.2/laypage.js"></script>
