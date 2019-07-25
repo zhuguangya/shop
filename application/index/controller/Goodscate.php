@@ -2,6 +2,7 @@
 namespace app\index\controller;
 use Request;
 use Db;
+use Cache;
 class Goodscate extends Common
 {    
 
@@ -62,7 +63,12 @@ class Goodscate extends Common
 
     public function show()
     {   
-    	$arr=Db::query("select * from goods_category");
+        $arr=Cache::get('name');
+        if(!$arr){
+            $arr=Db::query("select * from goods_category");
+            Cache::get('name',$arr,3600);
+        }
+    	
     	$this->getTree($arr);
     	
     	// $json=['code'=>'0','status'=>'ok','data'=>$arr];

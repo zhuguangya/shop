@@ -6,8 +6,12 @@
 		<article class="cl pd-20">
 			<div class="text-c">
 				<input type="text" name="" id="goods_id" value="{$goods_id}" >
+        <div class="text-c">
+        <input type="file" id="file">
+        <span><button type="button" class="btn btn-success" id="add" name=""><i class="Hui-iconfont">&#xe600;</i> 添加</button></span>
+      </div>
 			</div>
-			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <a><button type="button" class="btn btn-success" id="add" name="" onClick="modaldemo()"><i class="Hui-iconfont">&#xe600;</i> 货品添加</button></span></a> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a  onclick="deletemore()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <a><button type="button" class="btn btn-success" id="add" name="" onClick="modaldemo()"><i class="Hui-iconfont">&#xe600;</i> 货品添加</button></span></a><span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
 					<thead>
@@ -134,7 +138,7 @@
                    console.log(data)
                    var tr=''
                    for (var i = 0; i < data.length; i++) {
-                    tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'></td><td>"+data[i].id+"</td><td>"+data[i].attr_name+"</td><td>"+data[i].price+"</td><td>"+data[i].su_number+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo1()'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+                    tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'></td><td>"+data[i].id+"</td><td>"+data[i].attr_name+"</td><td>"+data[i].price+"</td><td>"+data[i].su_number+"</td><td class='f-14 product-brand-manage'><a  style='text-decoration:none' onclick='modaldemo1()'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a>&nbsp <a href='{:url('a/test')}'>下载</a></td></tr>"
                   }
                   $(".table tbody").html(tr)
                 } 
@@ -158,6 +162,25 @@
                 }
               })
                }
+              $('#add').click(function () {
+                     var file=$('#file')[0].files[0]
+                    var formData = new FormData();
+                    formData.append('file',$('#file')[0].files[0]);
+                   //  for (var i = 0; i < file.length; i++) {
+                   //       formData.append('file[]', file[i]);
+                   // }  
+                    $.ajax({
+                         url:"{:url('a/addAction')}",
+                                type:'post',
+                                data:formData,
+                                contentType:false,
+                                processData: false,
+                                cache:false,
+                    success:function (res) {
+                    console.log(res)
+                  }
+                })
+               })
 
              </script>
 
